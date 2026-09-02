@@ -613,15 +613,34 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _getCategoryIcon(String categoryName) {
+    switch (categoryName.toLowerCase()) {
+      case 'phones':
+        return Icon(Icons.smartphone_rounded, size: 28, color: const Color(0xFF3B82F6));
+      case 'laptops':
+        return Icon(Icons.laptop_mac_rounded, size: 28, color: const Color(0xFF64748B));
+      case 'fashion':
+        return Icon(Icons.checkroom_rounded, size: 28, color: const Color(0xFFEF4444));
+      case 'shoes':
+        return Icon(Icons.directions_run_rounded, size: 28, color: const Color(0xFF1F2937));
+      case 'beauty':
+        return Icon(Icons.favorite_rounded, size: 28, color: const Color(0xFFEC4899));
+      case 'home':
+        return Icon(Icons.event_seat_rounded, size: 28, color: const Color(0xFF10B981));
+      default:
+        return Icon(Icons.shopping_bag_rounded, size: 28, color: const Color(0xFF64748B));
+    }
+  }
+
   // 4. Categories Section
   Widget _buildCategoriesSection() {
     final List<Map<String, dynamic>> defaultCategories = [
-      {'name': 'Phones', 'icon': '📱', 'color': const Color(0xFFEFF6FF)},
-      {'name': 'Laptops', 'icon': '💻', 'color': const Color(0xFFF1F5F9)},
-      {'name': 'Fashion', 'icon': '👕', 'color': const Color(0xFFFFF1F2)},
-      {'name': 'Shoes', 'icon': '👟', 'color': const Color(0xFFF8FAFC)},
-      {'name': 'Beauty', 'icon': '💄', 'color': const Color(0xFFFFF7ED)},
-      {'name': 'Home', 'icon': '🛋️', 'color': const Color(0xFFECFDF5)},
+      {'name': 'Phones', 'color': const Color(0xFFEFF6FF)},
+      {'name': 'Laptops', 'color': const Color(0xFFF1F5F9)},
+      {'name': 'Fashion', 'color': const Color(0xFFFFF1F2)},
+      {'name': 'Shoes', 'color': const Color(0xFFF8FAFC)},
+      {'name': 'Beauty', 'color': const Color(0xFFFFF7ED)},
+      {'name': 'Home', 'color': const Color(0xFFECFDF5)},
     ];
 
     return Column(
@@ -670,17 +689,14 @@ class _HomeScreenState extends State<HomeScreen> {
             separatorBuilder: (context, index) => const SizedBox(width: 14),
             itemBuilder: (context, index) {
               String name = 'Category';
-              String icon = '🛍️';
               Color bg = const Color(0xFFF8FAFC);
 
               if (_categories.isNotEmpty && index < _categories.length) {
                 name = _categories[index].name;
                 final def = defaultCategories[index % defaultCategories.length];
-                icon = def['icon'];
                 bg = def['color'];
               } else {
                 name = defaultCategories[index]['name'];
-                icon = defaultCategories[index]['icon'];
                 bg = defaultCategories[index]['color'];
               }
 
@@ -691,7 +707,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     MaterialPageRoute(
                       builder: (context) => CategoryProductsScreen(
                         title: name,
-                        emoji: icon,
+                        emoji: '',
                         category: _categories.isNotEmpty && index < _categories.length ? _categories[index] : null,
                       ),
                     ),
@@ -708,7 +724,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         border: Border.all(color: const Color(0xFFE2E8F0)),
                       ),
                       child: Center(
-                        child: Text(icon, style: const TextStyle(fontSize: 26)),
+                        child: _getCategoryIcon(name),
                       ),
                     ),
                     const SizedBox(height: 6),

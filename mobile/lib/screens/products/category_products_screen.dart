@@ -120,6 +120,81 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
     },
   ];
 
+  final List<Map<String, dynamic>> _shoeFallbackProducts = [
+    {
+      'id': 201,
+      'name': 'Vans Old Skool Classic',
+      'spec': 'Genuine Vans Old Skool Classic',
+      'price': 65.00,
+      'old_price': 95.00,
+      'discount': '-31%',
+      'tag': 'New',
+      'rating': 4.8,
+      'reviews': 210,
+      'imageUrl': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=900&auto=format&fit=crop&q=80',
+    },
+    {
+      'id': 202,
+      'name': 'Nike Air Jordan 1 Retro',
+      'spec': 'Genuine Nike Air Jordan 1 Retro',
+      'price': 180.00,
+      'old_price': 210.00,
+      'discount': '-14%',
+      'tag': 'Bestseller',
+      'rating': 4.8,
+      'reviews': 184,
+      'imageUrl': 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=900&auto=format&fit=crop&q=80',
+    },
+    {
+      'id': 203,
+      'name': 'Adidas UltraBoost Li...',
+      'spec': 'Genuine Adidas UltraBoost Light',
+      'price': 190.00,
+      'old_price': 228.00,
+      'discount': '-16%',
+      'tag': 'Bestseller',
+      'rating': 4.8,
+      'reviews': 154,
+      'imageUrl': 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=900&auto=format&fit=crop&q=80',
+    },
+    {
+      'id': 204,
+      'name': 'New Balance 990v6',
+      'spec': 'Genuine New Balance 990v6',
+      'price': 210.00,
+      'old_price': 245.00,
+      'discount': '-14%',
+      'tag': 'New',
+      'rating': 4.8,
+      'reviews': 146,
+      'imageUrl': 'https://images.unsplash.com/photo-1607522370275-f14206abe5d3?w=900&auto=format&fit=crop&q=80',
+    },
+    {
+      'id': 205,
+      'name': 'Classic Slim Fit Chino',
+      'spec': 'Premium comfort chino shorts',
+      'price': 38.00,
+      'old_price': 49.00,
+      'discount': '-22%',
+      'tag': 'New',
+      'rating': 4.6,
+      'reviews': 92,
+      'imageUrl': 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=900&auto=format&fit=crop&q=80',
+    },
+    {
+      'id': 206,
+      'name': 'Breathable Bamboo Boot',
+      'spec': 'Breathable bamboo comfort boot',
+      'price': 29.00,
+      'old_price': 44.00,
+      'discount': '-34%',
+      'tag': 'Hot',
+      'rating': 4.5,
+      'reviews': 88,
+      'imageUrl': 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=900&auto=format&fit=crop&q=80',
+    },
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -339,7 +414,9 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final int count = _products.isNotEmpty ? _products.length : _mockFallbackProducts.length;
+    final bool isShoesCategory = widget.title.toLowerCase().contains('shoe');
+    final fallbackProducts = isShoesCategory ? _shoeFallbackProducts : _mockFallbackProducts;
+    final int count = _products.isNotEmpty ? _products.length : fallbackProducts.length;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -743,6 +820,9 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
 
   // 4. Products Grid / List View
   Widget _buildProductListing() {
+    final bool isShoesCategory = widget.title.toLowerCase().contains('shoe');
+    final fallbackProducts = isShoesCategory ? _shoeFallbackProducts : _mockFallbackProducts;
+
     return GridView.builder(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 80),
@@ -750,9 +830,9 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
         crossAxisCount: _isGridView ? 2 : 1,
         crossAxisSpacing: 12,
         mainAxisSpacing: 14,
-        childAspectRatio: _isGridView ? 0.65 : 1.9,
+        childAspectRatio: _isGridView ? 0.72 : 1.9,
       ),
-      itemCount: _products.isNotEmpty ? _products.length : _mockFallbackProducts.length,
+      itemCount: _products.isNotEmpty ? _products.length : fallbackProducts.length,
       itemBuilder: (context, index) {
         if (_products.isNotEmpty && index < _products.length) {
           final p = _products[index];
@@ -766,10 +846,10 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
             tag: p.tag,
             rating: p.rating,
             reviews: p.reviewsCount,
-            imageUrl: p.imageUrl ?? _mockFallbackProducts[index % _mockFallbackProducts.length]['imageUrl'],
+            imageUrl: p.imageUrl ?? fallbackProducts[index % fallbackProducts.length]['imageUrl'],
           );
         } else {
-          final fp = _mockFallbackProducts[index];
+          final fp = fallbackProducts[index];
           return _buildProductCard(
             id: fp['id'],
             name: fp['name'],
@@ -828,225 +908,213 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(18),
           border: Border.all(color: const Color(0xFFE2E8F0)),
           boxShadow: const [
             BoxShadow(
-              color: Color(0x05000000),
+              color: Color(0x08000000),
               blurRadius: 8,
               offset: Offset(0, 2),
             ),
           ],
         ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Image Area with Tag & Wishlist
-          Stack(
-            children: [
-              Container(
-                height: 130,
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFF8FAFC),
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-                ),
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
-                  child: Image.network(
-                    imageUrl,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) => const Center(
-                      child: Icon(Icons.laptop_chromebook_rounded, size: 48, color: Colors.grey),
-                    ),
-                  ),
-                ),
-              ),
-
-              // Bestseller / New / Discount Tag
-              if (tag != null)
-                Positioned(
-                  left: 8,
-                  top: 8,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
-                    decoration: BoxDecoration(
-                      color: tag == 'Bestseller'
-                          ? const Color(0xFFE8F5E9)
-                          : (tag == 'New' ? const Color(0xFFE0F2FE) : const Color(0xFFFFF1F2)),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Text(
-                      tag,
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 9.5,
-                        fontWeight: FontWeight.w800,
-                        color: tag == 'Bestseller'
-                            ? const Color(0xFF2E7D32)
-                            : (tag == 'New' ? const Color(0xFF0284C7) : const Color(0xFFE11D48)),
-                      ),
-                    ),
-                  ),
-                ),
-
-              // Wishlist Heart Button
-              Positioned(
-                right: 8,
-                top: 8,
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      if (isWishlisted) {
-                        _wishlistIds.remove(id);
-                      } else {
-                        _wishlistIds.add(id);
-                      }
-                    });
-                  },
-                  child: Container(
-                    width: 28,
-                    height: 28,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(color: Color(0x14000000), blurRadius: 4),
-                      ],
-                    ),
-                    child: Icon(
-                      isWishlisted ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                      size: 16,
-                      color: isWishlisted ? const Color(0xFFEF4444) : const Color(0xFF64748B),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          // Content Area
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Stack(
               children: [
-                // Product Title
-                Text(
-                  name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF111827),
+                Container(
+                  height: 150,
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+                    child: Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => const Center(
+                        child: Icon(Icons.sports_volleyball_rounded, size: 44, color: Colors.grey),
+                      ),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 2),
 
-                // Spec / description
-                Text(
-                  spec,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w500,
-                    color: const Color(0xFF64748B),
-                  ),
-                ),
-                const SizedBox(height: 4),
-
-                // Rating
-                Row(
-                  children: [
-                    const Icon(Icons.star_rounded, size: 14, color: Color(0xFFF59E0B)),
-                    const SizedBox(width: 2),
-                    Text(
-                      rating.toStringAsFixed(1),
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF1F2937),
+                if (tag != null)
+                  Positioned(
+                    left: 8,
+                    top: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: tag == 'Bestseller'
+                            ? const Color(0xFFE8F5E9)
+                            : (tag == 'New' ? const Color(0xFFE0F2FE) : const Color(0xFFFFF1F2)),
+                        borderRadius: BorderRadius.circular(6),
                       ),
-                    ),
-                    const SizedBox(width: 2),
-                    Text(
-                      '($reviews)',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 10,
-                        color: const Color(0xFF94A3B8),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-
-                // Prices & Discount
-                Row(
-                  children: [
-                    Text(
-                      '\$${price.toStringAsFixed(2)}',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w900,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                    if (oldPrice != null) ...[
-                      const SizedBox(width: 4),
-                      Text(
-                        '\$${oldPrice.toStringAsFixed(2)}',
+                      child: Text(
+                        tag,
                         style: GoogleFonts.plusJakartaSans(
-                          fontSize: 10.5,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xFF94A3B8),
-                          decoration: TextDecoration.lineThrough,
+                          fontSize: 9.5,
+                          fontWeight: FontWeight.w800,
+                          color: tag == 'Bestseller'
+                              ? const Color(0xFF2E7D32)
+                              : (tag == 'New' ? const Color(0xFF0284C7) : const Color(0xFFE11D48)),
                         ),
-                      ),
-                    ],
-                    if (discount != null) ...[
-                      const Spacer(),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFECFDF5),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          discount,
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 9.5,
-                            fontWeight: FontWeight.w800,
-                            color: const Color(0xFF059669),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-                const SizedBox(height: 6),
-
-                // Free Shipping Tag
-                Row(
-                  children: [
-                    const Icon(Icons.local_shipping_outlined, size: 13, color: Color(0xFF059669)),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Free Shipping',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF059669),
                       ),
                     ),
-                  ],
+                  ),
+
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        if (isWishlisted) {
+                          _wishlistIds.remove(id);
+                        } else {
+                          _wishlistIds.add(id);
+                        }
+                      });
+                    },
+                    child: Container(
+                      width: 28,
+                      height: 28,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(color: Color(0x12000000), blurRadius: 5),
+                        ],
+                      ),
+                      child: Icon(
+                        isWishlisted ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                        size: 16,
+                        color: isWishlisted ? const Color(0xFFEF4444) : const Color(0xFF64748B),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
-          ),
-        ],
+
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF111827),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    spec,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFF64748B),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      const Icon(Icons.star_rounded, size: 14, color: Color(0xFFF59E0B)),
+                      const SizedBox(width: 2),
+                      Text(
+                        rating.toStringAsFixed(1),
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF1F2937),
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '($reviews)',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 10,
+                          color: const Color(0xFF94A3B8),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        '\$${price.toStringAsFixed(2)}',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      if (oldPrice != null) ...[
+                        const SizedBox(width: 6),
+                        Text(
+                          '\$${oldPrice.toStringAsFixed(2)}',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w500,
+                            color: const Color(0xFF94A3B8),
+                            decoration: TextDecoration.lineThrough,
+                          ),
+                        ),
+                      ],
+                      if (discount != null) ...[
+                        const Spacer(),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFECFDF5),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Text(
+                            discount,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 9.5,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFF059669),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Icon(Icons.local_shipping_outlined, size: 13, color: Color(0xFF059669)),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Free Shipping',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF059669),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 }

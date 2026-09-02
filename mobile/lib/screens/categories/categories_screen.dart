@@ -40,7 +40,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       'icon': Icons.phone_iphone_rounded,
       'emoji': '📱',
       'itemsCount': '245 Items',
-      'imageUrl': 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400&auto=format&fit=crop&q=80',
+      'imageUrl': 'https://phonesstorekenya.com/product/apple-iphone-14-pro/?srsltid=AfmBOooM0c3o88hH8N2N44z0gZsB0CjEWmwPPuRorbVmqgD18pCt9xfB',
     },
     {
       'id': 2,
@@ -145,7 +145,6 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Merge API categories with visual presentation
     final List<Map<String, dynamic>> displayCategories = [];
 
     if (_apiCategories.isNotEmpty) {
@@ -182,141 +181,248 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       displayCategories.addAll(_catalogItems);
     }
 
-    // Filter by search query
     final filteredCategories = displayCategories.where((c) {
       if (_searchQuery.isEmpty) return true;
       return c['name'].toString().toLowerCase().contains(_searchQuery.toLowerCase());
     }).toList();
 
-    // Filter grid based on active horizontal pill selection
+    final sidebarCategories = filteredCategories.isNotEmpty ? filteredCategories : displayCategories;
+
     final gridItems = _selectedCategoryIndex == 0
-        ? filteredCategories.where((c) => c['id'] != 0).toList()
-        : filteredCategories.where((c) => c['id'] == displayCategories[_selectedCategoryIndex]['id']).toList();
+        ? sidebarCategories.where((c) => c['id'] != 0).toList()
+        : sidebarCategories.where((c) => c['id'] == displayCategories[_selectedCategoryIndex]['id']).toList();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFAFAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        title: Text(
-          'Categories',
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 20,
-            fontWeight: FontWeight.w800,
-            color: const Color(0xFF111827),
-          ),
-        ),
-        actions: [
-          Stack(
-            children: [
-              IconButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const CartScreen(showBackButton: true),
-                    ),
-                  );
-                },
-                icon: const Icon(
-                  Icons.shopping_cart_outlined,
-                  size: 24,
-                  color: Color(0xFF1E293B),
-                ),
-              ),
-              Consumer<CartProvider>(
-                builder: (context, cart, _) {
-                  if (cart.itemCount <= 0) return const SizedBox.shrink();
-                  return Positioned(
-                    right: 6,
-                    top: 6,
-                    child: Container(
-                      padding: const EdgeInsets.all(3),
-                      decoration: const BoxDecoration(
-                        color: AppColors.primary,
-                        shape: BoxShape.circle,
-                      ),
-                      constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-                      child: Center(
-                        child: Text(
-                          '${cart.itemCount}',
-                          style: GoogleFonts.plusJakartaSans(
-                            color: Colors.white,
-                            fontSize: 9.5,
-                            fontWeight: FontWeight.w800,
-                            height: 1,
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: _loadCategories,
-        color: AppColors.primary,
+      backgroundColor: const Color(0xFFF7F7F4),
+      body: SafeArea(
         child: Column(
           children: [
-            // 1. Search Bar with Filter Icon
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+              child: Row(
+                children: [
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Categories',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF1F2937),
+                      ),
+                    ),
+                  ),
+                  Stack(
+                    children: [
+                      IconButton(
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const CartScreen(showBackButton: true),
+                          ),
+                        ),
+                        icon: const Icon(Icons.shopping_cart_outlined, size: 26, color: Color(0xFF1F2937)),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                      Positioned(
+                        right: 4,
+                        top: 4,
+                        child: Consumer<CartProvider>(
+                          builder: (context, cart, _) {
+                            if (cart.itemCount <= 0) return const SizedBox.shrink();
+                            return Container(
+                              width: 18,
+                              height: 18,
+                              alignment: Alignment.center,
+                              decoration: const BoxDecoration(
+                                color: AppColors.primary,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Text(
+                                '${cart.itemCount}',
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
               child: Container(
-                height: 48,
+                height: 52,
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(14),
+                  color: const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: const Color(0xFFE2E8F0)),
-                  boxShadow: const [
-                    BoxShadow(color: Color(0x04000000), blurRadius: 4, offset: Offset(0, 1)),
-                  ],
                 ),
-                child: TextField(
-                  controller: _searchController,
-                  onChanged: (val) => setState(() => _searchQuery = val.trim()),
-                  style: GoogleFonts.plusJakartaSans(fontSize: 13.5, color: const Color(0xFF1E293B)),
-                  decoration: InputDecoration(
-                    hintText: 'Search categories...',
-                    hintStyle: GoogleFonts.plusJakartaSans(color: const Color(0xFF94A3B8), fontSize: 13.5),
-                    prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF94A3B8), size: 20),
-                    suffixIcon: const Icon(Icons.tune_rounded, color: Color(0xFF64748B), size: 18),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
+                child: Row(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(left: 18, right: 8),
+                      child: Icon(Icons.search_rounded, color: Color(0xFF94A3B8), size: 22),
+                    ),
+                    Expanded(
+                      child: TextField(
+                        controller: _searchController,
+                        onChanged: (val) => setState(() => _searchQuery = val.trim()),
+                        decoration: InputDecoration(
+                          hintText: 'Search categories...',
+                          hintStyle: GoogleFonts.plusJakartaSans(
+                            color: const Color(0xFF94A3B8),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          border: InputBorder.none,
+                          isCollapsed: true,
+                          contentPadding: const EdgeInsets.symmetric(vertical: 15),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 12),
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.tune_rounded, color: Color(0xFF64748B), size: 22),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-
-            // 2. Horizontal Scrollable Category Filter Pills
-            _buildHorizontalCategoryScroll(displayCategories),
-
-            const SizedBox(height: 12),
-
-            // 3. 2-Column Full Width Category Cards Grid
             Expanded(
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
-                  : gridItems.isEmpty
-                      ? _buildEmptyView()
-                      : GridView.builder(
-                          physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-                          padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 14,
-                            mainAxisSpacing: 14,
-                            childAspectRatio: 0.82,
+                  : Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 168,
+                          decoration: const BoxDecoration(
+                            border: Border(right: BorderSide(color: Color(0xFFE2E8F0))),
                           ),
-                          itemCount: gridItems.length,
-                          itemBuilder: (context, index) {
-                            return _buildCategoryCard(gridItems[index]);
-                          },
+                          child: ListView.separated(
+                            padding: const EdgeInsets.only(left: 12, right: 12, top: 10, bottom: 20),
+                            itemCount: sidebarCategories.length,
+                            separatorBuilder: (context, index) => const SizedBox(height: 8),
+                            itemBuilder: (context, index) {
+                              final item = sidebarCategories[index];
+                              final isSelected = _selectedCategoryIndex == index ||
+                                  (_selectedCategoryIndex == 0 && index == 0) ||
+                                  (item['id'] == displayCategories[_selectedCategoryIndex]['id'] && _selectedCategoryIndex != 0);
+
+                              final categoryName = item['name'] as String;
+                              final categoryIcon = item['icon'] as IconData? ?? Icons.category_rounded;
+                              final iconColors = [
+                                const Color(0xFFFB923C),
+                                const Color(0xFF2DD4BF),
+                                const Color(0xFF60A5FA),
+                                const Color(0xFFA78BFA),
+                                const Color(0xFFF472B6),
+                                const Color(0xFF34D399),
+                                const Color(0xFFF59E0B),
+                                const Color(0xFF22C55E),
+                                const Color(0xFF8B5CF6),
+                              ];
+                              final color = iconColors[index % iconColors.length];
+
+                              return InkWell(
+                                onTap: () {
+                                  final selectedIndex = displayCategories.indexWhere((c) => c['id'] == item['id']);
+                                  setState(() => _selectedCategoryIndex = selectedIndex >= 0 ? selectedIndex : 0);
+                                },
+                                borderRadius: BorderRadius.circular(14),
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 180),
+                                  height: 54,
+                                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                                  decoration: BoxDecoration(
+                                    color: isSelected ? const Color(0xFFFDE7DC) : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: isSelected
+                                        ? const Border(left: BorderSide(color: AppColors.primary, width: 4))
+                                        : const Border(left: BorderSide(color: Colors.transparent, width: 4)),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 32,
+                                        height: 32,
+                                        decoration: BoxDecoration(
+                                          color: isSelected ? const Color(0xFFFFE4D6) : const Color(0xFFF3F4F6),
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: Icon(categoryIcon, size: 18, color: isSelected ? AppColors.primary : color),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Text(
+                                          categoryName,
+                                          style: GoogleFonts.plusJakartaSans(
+                                            fontSize: 14,
+                                            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                                            color: isSelected ? const Color(0xFF1F2937) : const Color(0xFF475569),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                            child: gridItems.isEmpty
+                                ? _buildEmptyView()
+                                : GridView.builder(
+                                    physics: const BouncingScrollPhysics(),
+                                    itemCount: gridItems.length,
+                                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      childAspectRatio: 0.9,
+                                      crossAxisSpacing: 14,
+                                      mainAxisSpacing: 14,
+                                    ),
+                                    itemBuilder: (context, index) {
+                                      return _buildCategoryCard(gridItems[index]);
+                                    },
+                                  ),
+                          ),
+                        ),
+                      ],
+                    ),
+            ),
+            Container(
+              height: 74,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildBottomItem(Icons.home_outlined, 'Home', false),
+                  _buildBottomItem(Icons.widgets_rounded, 'Categories', true),
+                  _buildBottomItem(Icons.shopping_cart_outlined, 'Cart', false),
+                  _buildBottomItem(Icons.favorite_border_rounded, 'Wishlist', false),
+                  _buildBottomItem(Icons.person_outline_rounded, 'Account', false),
+                ],
+              ),
             ),
           ],
         ),
@@ -324,75 +430,24 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     );
   }
 
-  // 2. Horizontal Scrollable Category Filter Pills
-  Widget _buildHorizontalCategoryScroll(List<Map<String, dynamic>> categories) {
-    return SizedBox(
-      height: 42,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: categories.length,
-        separatorBuilder: (context, index) => const SizedBox(width: 8),
-        itemBuilder: (context, index) {
-          final cat = categories[index];
-          final bool isSelected = _selectedCategoryIndex == index;
-
-          return GestureDetector(
-            onTap: () => setState(() => _selectedCategoryIndex = index),
-            behavior: HitTestBehavior.opaque,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              decoration: BoxDecoration(
-                color: isSelected ? AppColors.primary : Colors.white,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: isSelected ? AppColors.primary : const Color(0xFFE2E8F0),
-                  width: 1.2,
-                ),
-                boxShadow: isSelected
-                    ? const [
-                        BoxShadow(
-                          color: Color(0x33FF6600),
-                          blurRadius: 8,
-                          offset: Offset(0, 3),
-                        ),
-                      ]
-                    : const [
-                        BoxShadow(
-                          color: Color(0x04000000),
-                          blurRadius: 4,
-                          offset: Offset(0, 1),
-                        ),
-                      ],
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    cat['emoji'] ?? '📦',
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    cat['name'],
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 12.5,
-                      fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                      color: isSelected ? Colors.white : const Color(0xFF475569),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
+  Widget _buildBottomItem(IconData icon, String label, bool active) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(icon, size: 26, color: active ? AppColors.primary : const Color(0xFF64748B)),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 11,
+            fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+            color: active ? AppColors.primary : const Color(0xFF64748B),
+          ),
+        ),
+      ],
     );
   }
 
-  // 3. Category Card
   Widget _buildCategoryCard(Map<String, dynamic> item) {
     return GestureDetector(
       onTap: () {
@@ -422,33 +477,21 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          color: const Color(0xFFF7F7F5),
+          borderRadius: BorderRadius.circular(18),
           border: Border.all(color: const Color(0xFFE2E8F0)),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x05000000),
-              blurRadius: 6,
-              offset: Offset(0, 2),
-            ),
-          ],
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Top Image
             Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFF8FAFC),
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-                ),
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+                child: Container(
+                  color: const Color(0xFFF4F6F8),
                   child: Image.network(
                     item['imageUrl'] ?? 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&auto=format&fit=crop&q=80',
                     fit: BoxFit.cover,
+                    width: double.infinity,
                     errorBuilder: (context, error, stackTrace) => Center(
                       child: Icon(item['icon'] as IconData? ?? Icons.category_rounded, size: 44, color: AppColors.primaryLight),
                     ),
@@ -456,34 +499,27 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 ),
               ),
             ),
-
-            // Title & Items Count
             Padding(
-              padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
-              child: Column(
-                children: [
-                  Text(
-                    item['name'],
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF111827),
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    item['itemsCount'] ?? '5 Items',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                      color: const Color(0xFF64748B),
-                    ),
-                  ),
-                ],
+              padding: const EdgeInsets.fromLTRB(8, 12, 8, 10),
+              child: Text(
+                item['name'],
+                textAlign: TextAlign.center,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF1F2937),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Text(
+                item['itemsCount'] ?? '5 Items',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF6B7280),
+                ),
               ),
             ),
           ],
